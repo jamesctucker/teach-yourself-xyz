@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     fetchSearchResults() {
-      let apiKey = `AIzaSyD3IF1b1VQERFQVkJSQXE2oMd6qJnkGIPk`;
+      let apiKey = process.env.NUXT_ENV_YOUTUBE_API_KEY;
       let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${this.$route.query.search}}&type=playlist&key=${apiKey}`;
       fetch(url)
         .then(response => response.json())

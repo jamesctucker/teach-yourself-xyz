@@ -10,7 +10,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "nuxt": "^2.14.0"
+    "nuxt": "^2.14.0",
+    "plyr": "^3.6.2",
+    "vue-plyr": "^6.0.4"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^2.1.0",

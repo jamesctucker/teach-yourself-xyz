@@ -1,0 +1,17 @@
+{
+  "projectName": "teachyourselfxyz",
+  "version": "3.0",
+  "frontend": "javascript",
+  "javascript": {
+    "framework": "vue",
+    "config": {
+      "SourceDir": "/",
+      "DistributionDir": "dist",
+      "BuildCommand": "nuxt build",
+      "StartCommand": "nuxt start"
+    }
+  },
+  "providers": [
+    "awscloudformation"
+  ]
+}

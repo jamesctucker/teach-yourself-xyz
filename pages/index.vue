@@ -1,18 +1,63 @@
 <template>
   <div class="container">
-    <div></div>
+    <!-- Unauthenticated -->
+    <div v-if="!$auth.isAuthenticated">
+      <nuxt-link to="/login">Login</nuxt-link>
+      <nuxt-link to="/register">Register</nuxt-link>
+    </div>
+    <!-- Authenticated -->
+    <div v-else>
+      <p>You're logged in as {{ $auth.email }}</p>
+      <button @click="$store.dispatch('auth/logout')">Logout</button>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import gql from "graphql-tag";
+
 export default {
   name: "Home",
-  computed: {
-    ...mapState({
-      currentUser: state => state.currentUser
-    })
+  mounted() {
+    if (this.$auth.isAuthenticated) {
+      this.$apollo.addSmartQuery("fetchPlaylists", {
+        query: gql`
+          query fetchPlaylists {
+            playlists(
+              where: {
+                user_id: { _eq: "bc84fbc8-f608-42c2-8dcb-f2d19785700d" }
+              }
+            ) {
+              video_ids
+              title
+              creator
+              thumbnail
+              id
+            }
+          }
+        `,
+        result({ data, loading, networkStatus }) {
+          if (data) {
+            console.log("We got some result!", data.playlists);
+            this.$store.dispatch("playlists/addPlaylists", data.playlists);
+          }
+        }
+      });
+    }
   }
+
+  // apollo: {
+  //   users: {
+  //     query: gql`
+  //       query MyQuery {
+  //         users {
+  //           cognito_id
+  //         }
+  //       }
+  //     `
+  //   }
+  // }
 };
 </script>
 

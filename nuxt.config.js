@@ -3,7 +3,7 @@ export default {
    ** Nuxt rendering mode
    ** See https://nuxtjs.org/api/configuration-mode
    */
-  mode: "universal",
+  mode: "spa",
   /*
    ** Nuxt target
    ** See https://nuxtjs.org/api/configuration-target
@@ -36,6 +36,7 @@ export default {
    */
   plugins: [
     "~/plugins/vue-plyr",
+    "~/plugins/auth",
     { src: "~/plugins/amplify.js", mode: "client" }
   ],
   /*
@@ -53,7 +54,19 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: [],
+  modules: ["@nuxtjs/apollo"],
+  apollo: {
+    clientConfigs: {
+      default: {
+        httpEndpoint: "https://teach-yourself-xyz.herokuapp.com/v1/graphql",
+        httpLinkOptions: {
+          headers: {
+            "x-hasura-admin-secret": "Megan90591"
+          }
+        }
+      }
+    }
+  },
   /*
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/

@@ -2,7 +2,7 @@
   <div>
     <h1>Playlist</h1>
     <Video :video-id="videoToWatchId ? videoToWatchId : defaultVideoId" />
-
+    <button @click="addPlaylist">Add Playlist</button>
     <div v-for="(item, index) in playlistItems" :key="index">
       <!-- <vue-plyr>
         <div
@@ -21,6 +21,7 @@
 
 <script>
 import Video from "../components/Video";
+import gql from "graphql-tag";
 
 export default {
   name: "Playlist",
@@ -30,12 +31,27 @@ export default {
   data() {
     return {
       playlistItems: [],
+      videoIds: [],
       videoToWatchId: null,
       defaultVideoId: null
     };
   },
   beforeMount() {
     this.fetchPlaylistItems();
+  },
+  computed: {
+    currentUserId() {
+      return this.$store.state.auth.user.username;
+    },
+    playlistTitle() {
+      return this.$route.query.title;
+    },
+    channelCreator() {
+      return this.$route.query.creator;
+    },
+    thumbnail() {
+      return this.$route.query.thumbnail;
+    }
   },
   methods: {
     fetchPlaylistItems() {
@@ -44,12 +60,59 @@ export default {
       fetch(url)
         .then(response => response.json())
         .then(data => {
+          data.items.map(item =>
+            this.videoIds.push(item.snippet.resourceId.videoId)
+          );
+          console.log(data);
           this.playlistItems = data.items;
           this.defaultVideoId = data.items[0].snippet.resourceId.videoId;
         });
     },
     setVideoToWatch(videoId) {
       this.videoToWatchId = videoId;
+    },
+    addPlaylist() {
+      this.$apollo
+        .mutate({
+          // Query
+          mutation: gql`
+            mutation addPlaylist(
+              $user_id: String!
+              $video_ids: _text!
+              $title: String!
+              $creator: String!
+              $thumbnail: String!
+            ) {
+              insert_playlists(
+                objects: {
+                  user_id: $user_id
+                  video_ids: $video_ids
+                  title: $title
+                  creator: $creator
+                  thumbnail: $thumbnail
+                }
+              ) {
+                returning {
+                  video_ids
+                  user_id
+                  title
+                  creator
+                  thumbnail
+                }
+              }
+            }
+          `,
+          // Parameters
+          variables: {
+            user_id: this.currentUserId,
+            video_ids: "{" + this.videoIds + "}",
+            title: this.playlistTitle,
+            creator: this.channelCreator,
+            thumbnail: this.thumbnail
+          }
+        })
+        .then(response => console.log(response))
+        .catch(error => console.log(error));
     }
   }
 };

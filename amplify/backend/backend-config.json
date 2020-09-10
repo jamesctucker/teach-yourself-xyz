@@ -1,1 +1,10 @@
-{}
+{
+  "auth": {
+    "teachyourselfxyz05a418ff": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}

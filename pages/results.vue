@@ -10,12 +10,15 @@
           target="blank"
           rel="noopener noreferrer"
         > -->
-        <nuxt-link :to="`/playlist?id=${item.id.playlistId}`">
+        <nuxt-link
+          :to="
+            `/playlist?id=${item.id.playlistId}&title=${item.snippet.title}&creator=${item.snippet.channelTitle}&thumbnail=${item.snippet.thumbnails.default.url}`
+          "
+        >
           <img :src="item.snippet.thumbnails.default.url" alt="" />
           <h3>{{ item.snippet.title }}</h3>
         </nuxt-link>
         <!-- </a> -->
-        <button>Add</button>
       </div>
     </div>
   </div>
@@ -41,12 +44,15 @@ export default {
   computed: {
     searchTerm() {
       return this.$route.query.search;
+    },
+    searchType() {
+      return this.$route.query.type;
     }
   },
   methods: {
     fetchSearchResults() {
       let apiKey = process.env.NUXT_ENV_YOUTUBE_API_KEY;
-      let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${this.$route.query.search}}&type=playlist&key=${apiKey}`;
+      let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${this.searchTerm}}&type=${this.searchType}&key=${apiKey}`;
       fetch(url)
         .then(response => response.json())
         .then(data => {
